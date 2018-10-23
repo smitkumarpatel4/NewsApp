@@ -1,76 +1,76 @@
 package com.example.android.newsapp;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.example.android.newsapp.Adapter.NewsItemAdapter;
+import com.example.android.newsapp.Models.NewsItem;
+import com.example.android.newsapp.Utilities.JSONUtils;
 import com.example.android.newsapp.Utilities.NetworkUtils;
-
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
-
-    private TextView mQueryTextView;
+public class MainActivity extends AppCompatActivity //implements LoaderManager.LoaderCallbacks<String>
+ {
+    private RecyclerView mRecyclerView;
+    private NewsItemAdapter mAdapter;
+    private ArrayList<NewsItem> newsItem = new ArrayList<>();
     @Override
-
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mQueryTextView = (TextView)findViewById(R.id.tv_newsapp_results_json);
-        setNewsQuery();
+
+       // mProgressBar = (ProgressBar)findViewById(R.id.progress);
+
+        mRecyclerView = (RecyclerView)findViewById(R.id.tv_recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);
+
+        mAdapter = new NewsItemAdapter(this, newsItem);
+        mRecyclerView.setAdapter(mAdapter);
+
+        makeNewsURL();
     }
 
-    public void setNewsQuery(){
+    private void  makeNewsURL(){
         URL newsURL = NetworkUtils.buildUrl();
-        mQueryTextView.setText(newsURL.toString());
         new NewsAppQueryTask().execute(newsURL);
     }
 
-    public class NewsAppQueryTask extends AsyncTask<URL, Void, String>{
-        @Override
-        protected String doInBackground(URL... urls) {
-            URL clickUrl = urls[0];
-            String newsAppClickResult = null;
-            try{
-                newsAppClickResult = NetworkUtils.getResponseFromHttpUrl(clickUrl);
-            }
-            catch (IOException e){
-                e.printStackTrace();
-            }
-            return newsAppClickResult;
-        }
+    public class NewsAppQueryTask extends AsyncTask<URL, Void, String> {
+         @Override
+         protected String doInBackground(URL... urls) {
+             URL clickUrl = urls[0];
+             String newsAppClickResult = null;
+             try{
+                 newsAppClickResult = NetworkUtils.getResponseFromHttpUrl(clickUrl);
+             }
+             catch (IOException e){
+                 e.printStackTrace();
+             }
+             return newsAppClickResult;
+         }
 
-        @Override
-        protected void onPostExecute(String s) {
-            if(s != null && !s.equals("")){
-                mQueryTextView.setText(s);
-            }
-        }
-    }
+         @Override
+         protected void onPostExecute(String s) {
+             newsItem = JSONUtils.makeNewsItemList(s);
+             populateRecyclerView(newsItem);
+         }
+     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.main ,menu);
-        return true;
+     public void populateRecyclerView(ArrayList<NewsItem> newsItem ){
+         mAdapter.mNewsList.addAll(newsItem);
+         mAdapter.notifyDataSetChanged();
+     }
 
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item){
-        int itemThatClickedId = item.getItemId();
-        if (itemThatClickedId == R.id.action_search){
-            Context context = MainActivity.this;
-            String textToShow ="Search Clicked";
-            Toast.makeText(context, textToShow, Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-
-    }
+     @Override
+     public boolean onCreateOptionsMenu(Menu menu){
+         getMenuInflater().inflate(R.menu.main ,menu);
+         return true;
+     }
 }

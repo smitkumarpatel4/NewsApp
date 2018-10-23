@@ -13,6 +13,22 @@ public class NewsItem {
 
     }
 
+    public NewsItem(String title, String description, String url, String publishedAt) {
+        this.title = title;
+        this.description = description;
+        this.url = url;
+        this.publishedAt = publishedAt;
+    }
+
+    public NewsItem(String author, String title, String description, String url, String urlToImage, String publishedAt) {
+        this.author = author;
+        this.title = title;
+        this.description = description;
+        this.url = url;
+        this.urlToImage = urlToImage;
+        this.publishedAt = publishedAt;
+    }
+
     public String getAuthor() {
         return author;
     }
