@@ -3,7 +3,6 @@ package com.example.android.newsapp.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.android.newsapp.Models.NewsItem;
 import com.example.android.newsapp.R;
-import com.example.android.newsapp.Web.WebActivity;
+import com.example.android.newsapp.WebActivity;
 
 import java.util.ArrayList;
 
@@ -23,10 +22,11 @@ public class NewsItemAdapter extends RecyclerView.Adapter<NewsItemAdapter.NewsIt
         this.mContext = context;
         this.mNewsList = newsList;
     }
+
+
     @Override
     public NewsItemAdapter.NewsItemHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.news_item_list;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
@@ -69,7 +69,7 @@ public class NewsItemAdapter extends RecyclerView.Adapter<NewsItemAdapter.NewsIt
                 public void onClick(View view) {
                     String urlString = mNewsList.get(listIndex).getUrl();
                     Intent intent = new Intent(mContext, WebActivity.class);
-                    intent.putExtra("urlString", urlString);
+                    intent.putExtra(Intent.EXTRA_TEXT, urlString);
                     mContext.startActivity(intent);
                 }
             });

@@ -16,6 +16,10 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity //implements LoaderManager.LoaderCallbacks<String>
  {
+     public static final String URL_EXTRA = "newsArticleUrl";
+     public static final String URL_Result = "newsUrlResult";
+
+
     private RecyclerView mRecyclerView;
     private NewsItemAdapter mAdapter;
     private ArrayList<NewsItem> newsItem = new ArrayList<>();
@@ -24,14 +28,12 @@ public class MainActivity extends AppCompatActivity //implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       // mProgressBar = (ProgressBar)findViewById(R.id.progress);
-
         mRecyclerView = (RecyclerView)findViewById(R.id.tv_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new NewsItemAdapter(this, newsItem);
+        mAdapter = new NewsItemAdapter(MainActivity.this, newsItem);
         mRecyclerView.setAdapter(mAdapter);
 
         makeNewsURL();
@@ -42,7 +44,10 @@ public class MainActivity extends AppCompatActivity //implements LoaderManager.L
         new NewsAppQueryTask().execute(newsURL);
     }
 
-    public class NewsAppQueryTask extends AsyncTask<URL, Void, String> {
+
+
+
+     public class NewsAppQueryTask extends AsyncTask<URL, Void, String> {
          @Override
          protected String doInBackground(URL... urls) {
              URL clickUrl = urls[0];
@@ -61,6 +66,8 @@ public class MainActivity extends AppCompatActivity //implements LoaderManager.L
              newsItem = JSONUtils.makeNewsItemList(s);
              populateRecyclerView(newsItem);
          }
+
+
      }
 
      public void populateRecyclerView(ArrayList<NewsItem> newsItem ){
@@ -73,4 +80,6 @@ public class MainActivity extends AppCompatActivity //implements LoaderManager.L
          getMenuInflater().inflate(R.menu.main ,menu);
          return true;
      }
+
+
 }
